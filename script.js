@@ -1,19 +1,13 @@
 window.addEventListener("DOMContentLoaded", init);
 
-function init() {}
-
-const addBtn = document.querySelector(".add");
-const inputValue = document.querySelector(".primaryInput");
-addBtn.onclick = function () {
-  event.preventDefault();
-  getData();
-  console.log(inputValue.value);
-};
+function init() {
+  getData("progress", appendProgressCards);
+}
 
 function createCards(path) {}
 
-function getData() {
-  fetch("https://deleteme-6090.restdb.io/rest/progress", {
+function getData(path, functiontoCall) {
+  fetch("https://deleteme-6090.restdb.io/rest/" + path, {
     method: "get",
     headers: {
       "Content-type": "application/json; charset=utf-8",
@@ -22,7 +16,25 @@ function getData() {
     },
   })
     .then((res) => res.json())
-    .then((data) => console.log(data));
+    .then((data) => data.forEach(functiontoCall));
+}
+
+function appendProgressCards(progress) {
+  const template = document.querySelector("template").content;
+  const cln = template.cloneNode(true);
+  console.log(cln.querySelector("h2"));
+  cln.querySelector("h2").textContent = progress.title;
+
+  const inputValue = cln.querySelector(".primaryInput");
+  cln
+    .querySelector(".add")
+    .addEventListener("click", () => addItem(inputValue));
+  document.querySelector(".cards-Container").appendChild(cln);
+}
+
+function addItem(inputField) {
+  event.preventDefault();
+  console.log(inputField.value);
 }
 
 // function showData(element) {
