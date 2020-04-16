@@ -11,12 +11,21 @@
     <template>
       <div class="card-boxes">
         <h2>todo</h2>
-        <form action="">
-          <textarea class="primaryInput" rows="4" cols="30"> </textarea>
-          <button class="add">Add</button>
-        </form>
         <hr />
-        <div class="list"></div>
+
+        <hr />
+        <div class="list">
+          <form action="">
+            <div class="list-item">
+              <textarea class="primaryInput">somethings</textarea>
+              <div class="actions">
+                <button class="edit">Edit</button>
+                <button class="delete">delete</button>
+                <button class="add">ok</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </template>
 

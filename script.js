@@ -4,8 +4,6 @@ function init() {
   getData("progress", appendProgressCards);
 }
 
-function createCards(path) {}
-
 function getData(path, functiontoCall) {
   fetch("https://deleteme-6090.restdb.io/rest/" + path, {
     method: "get",
@@ -22,36 +20,41 @@ function getData(path, functiontoCall) {
 function appendProgressCards(progress) {
   const template = document.querySelector("template").content;
   const cln = template.cloneNode(true);
+  cln.querySelector(".card-boxes").dataset.id = progress._id;
   cln.querySelector("h2").textContent = progress.title;
-
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
+  progress.cards.forEach((todoItem) =>
+    addAlreadyExistingTodos(todoItem.title, list)
+  );
   cln
     .querySelector(".add")
-    .addEventListener("click", () => addItem(inputValue, progress));
+    .addEventListener("click", () => addItem(inputValue, progress, list));
+
   document.querySelector(".cards-Container").appendChild(cln);
+  addAutoExpand();
 }
 
-function addItem(inputValue, progress) {
+function addItem(inputValue, progress, parent) {
   event.preventDefault();
   postItem(inputValue.value, progress);
-  // const listItemtemplate = document.querySelector(".list-item-template")
-  //   .content;
-  // const listItemcln = listItemtemplate.cloneNode(true);
-  // listItemcln.querySelector(".secondaryInput").textContent = inputValue.value;
-  // parent.appendChild(listItemcln);
+  addAlreadyExistingTodos(inputValue.value, parent);
 }
 
-function insertItemToDatabase() {}
+function addAlreadyExistingTodos(inputValue, parent) {
+  const listItemtemplate = document.querySelector(".list-item-template")
+    .content;
+  const listItemcln = listItemtemplate.cloneNode(true);
+  listItemcln.querySelector(".secondaryInput").textContent = inputValue;
+  parent.prepend(listItemcln);
+}
 
 function postItem(inputValue, progress) {
   const newListItem = {
     title: inputValue,
     progresscard: progress,
   };
-
   putItem(progress, newListItem);
-
   fetch(`https://deleteme-6090.restdb.io/rest/card`, {
     method: "post",
     headers: {
@@ -100,3 +103,36 @@ function putItem(progress, item) {
 //     .then((res) => res.json())
 //     .then((data) => console.log(data));
 // }
+
+function addAutoExpand() {
+  const textareas = document.querySelectorAll("textarea");
+
+  textareas.forEach((area) => {
+    area.addEventListener(
+      "input",
+      function (event) {
+        if (event.target.tagName.toLowerCase() !== "textarea") return;
+        autoExpand(event.target);
+      },
+      false
+    );
+  });
+}
+
+const autoExpand = (field) => {
+  // Reset field height
+  field.style.height = "inherit";
+
+  // Get the computed styles for the element
+  var computed = window.getComputedStyle(field);
+
+  // Calculate the height
+  var height =
+    parseInt(computed.getPropertyValue("border-top-width"), 10) +
+    parseInt(computed.getPropertyValue("padding-top"), 10) +
+    field.scrollHeight +
+    parseInt(computed.getPropertyValue("padding-bottom"), 10) +
+    parseInt(computed.getPropertyValue("border-bottom-width"), 10);
+
+  field.style.height = height + "px";
+};
