@@ -24,37 +24,37 @@ function appendProgressCards(progress) {
   cln.querySelector("h2").textContent = progress.title;
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
-  progress.cards.forEach((todoItem) =>
-    addAlreadyExistingTodos(todoItem.title, list)
-  );
+  progress.cards.forEach((todoItem) => displayTodos(todoItem.title, list));
   cln
     .querySelector(".add")
     .addEventListener("click", () => addItem(inputValue, progress, list));
 
   document.querySelector(".cards-Container").appendChild(cln);
-  addAutoExpand();
+  // addAutoExpand();
 }
 
 function addItem(inputValue, progress, parent) {
   event.preventDefault();
-  postItem(inputValue.value, progress);
-  addAlreadyExistingTodos(inputValue.value, parent);
+  postTodo(inputValue.value, progress);
+  displayTodos(inputValue.value, parent);
 }
 
-function addAlreadyExistingTodos(inputValue, parent) {
+function displayTodos(inputValue, parent) {
   const listItemtemplate = document.querySelector(".list-item-template")
     .content;
   const listItemcln = listItemtemplate.cloneNode(true);
-  listItemcln.querySelector(".secondaryInput").textContent = inputValue;
-  parent.prepend(listItemcln);
+  const textArea = listItemcln.querySelector(".secondaryInput");
+  textArea.textContent = inputValue;
+  addEvenListenerToExpand(textArea);
+  parent.append(listItemcln);
 }
 
-function postItem(inputValue, progress) {
+function postTodo(inputValue, progress) {
   const newListItem = {
     title: inputValue,
     progresscard: progress,
   };
-  putItem(progress, newListItem);
+  updateProgressCard(progress, newListItem);
   fetch(`https://deleteme-6090.restdb.io/rest/card`, {
     method: "post",
     headers: {
@@ -69,15 +69,11 @@ function postItem(inputValue, progress) {
     .then((d) => console.log(d));
 }
 
-function putItem(progress, item) {
-  console.log(item);
+function updateProgressCard(progress, item) {
   const newBand = {
     $push: { cards: item },
   };
-  console.log(newBand);
-
   let postData = JSON.stringify(newBand);
-
   fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
     method: "put",
     headers: {
@@ -106,17 +102,18 @@ function putItem(progress, item) {
 
 function addAutoExpand() {
   const textareas = document.querySelectorAll("textarea");
+  textareas.forEach(addEvenListenerToExpand);
+}
 
-  textareas.forEach((area) => {
-    area.addEventListener(
-      "input",
-      function (event) {
-        if (event.target.tagName.toLowerCase() !== "textarea") return;
-        autoExpand(event.target);
-      },
-      false
-    );
-  });
+function addEvenListenerToExpand(area) {
+  area.addEventListener(
+    "input",
+    function (event) {
+      if (event.target.tagName.toLowerCase() !== "textarea") return;
+      autoExpand(event.target);
+    },
+    false
+  );
 }
 
 const autoExpand = (field) => {
