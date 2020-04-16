@@ -22,50 +22,71 @@ function getData(path, functiontoCall) {
 function appendProgressCards(progress) {
   const template = document.querySelector("template").content;
   const cln = template.cloneNode(true);
-  console.log(cln.querySelector("h2"));
   cln.querySelector("h2").textContent = progress.title;
 
+  const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
   cln
     .querySelector(".add")
-    .addEventListener("click", () => addItem(inputValue));
+    .addEventListener("click", () => addItem(inputValue, progress));
   document.querySelector(".cards-Container").appendChild(cln);
 }
 
-function addItem(inputField) {
+function addItem(inputValue, progress) {
   event.preventDefault();
-  console.log(inputField.value);
+  postItem(inputValue.value, progress);
+  // const listItemtemplate = document.querySelector(".list-item-template")
+  //   .content;
+  // const listItemcln = listItemtemplate.cloneNode(true);
+  // listItemcln.querySelector(".secondaryInput").textContent = inputValue.value;
+  // parent.appendChild(listItemcln);
 }
 
-// function showData(element) {
-//   console.log(element);
-//   const template = document.querySelector("template").content;
-//   const cln = template.cloneNode(true);
-//   cln.querySelector(".name").textContent = element.name;
-//   document.querySelector(".div").appendChild(cln);
-// }
+function insertItemToDatabase() {}
 
-// function postItem() {
-//   const newBand = {
-//     name: "Backstreet boys",
-//     yearStarted: "1995-10-20",
-//     genre: "rock",
-//   };
+function postItem(inputValue, progress) {
+  const newListItem = {
+    title: inputValue,
+    progresscard: progress,
+  };
 
-//   const postData = JSON.stringify(newBand);
-//   fetch(`https://deleteme-6090.restdb.io/rest/bands`, {
-//     method: "post",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-type": "application/json",
-//       "x-apikey": "5e9570bb436377171a0c2315",
-//       "cache-control": "no-cache",
-//     },
-//     body: postData,
-//   })
-//     .then((res) => res.json())
-//     .then((d) => getData());
-// }
+  putItem(progress, newListItem);
+
+  fetch(`https://deleteme-6090.restdb.io/rest/card`, {
+    method: "post",
+    headers: {
+      Accept: "application/json",
+      "Content-type": "application/json",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+    body: JSON.stringify(newListItem),
+  })
+    .then((res) => res.json())
+    .then((d) => console.log(d));
+}
+
+function putItem(progress, item) {
+  console.log(item);
+  const newBand = {
+    $push: { cards: item },
+  };
+  console.log(newBand);
+
+  let postData = JSON.stringify(newBand);
+
+  fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
+    method: "put",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+    body: postData,
+  })
+    .then((d) => d.json())
+    .then((t) => console.log(t));
+}
 
 // function deleteItem(id) {
 //   fetch(`https://deleteme-6090.restdb.io/rest/bands/${id}`, {
@@ -78,26 +99,4 @@ function addItem(inputField) {
 //   })
 //     .then((res) => res.json())
 //     .then((data) => console.log(data));
-// }
-
-// function putItem(params) {
-//   const newBand = {
-//     name: "Backstreet boys",
-//     yearStarted: "1995-10-20",
-//     genre: "rock",
-//   };
-
-//   let postData = JSON.stringify(data);
-
-//   fetch(`https://deleteme-6090.restdb.io/rest/bands/${id}`, {
-//     method: "put",
-//     headers: {
-//       "Content-Type": "application/json; charset=utf-8",
-//       "x-apikey": "5e9570bb436377171a0c2315",
-//       "cache-control": "no-cache",
-//     },
-//     body: postData,
-//   })
-//     .then((d) => d.json())
-//     .then((t) => console.log(t));
 // }
