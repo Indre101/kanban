@@ -63,12 +63,30 @@ function displayTodo(inputValue, parent) {
   const textArea = listItemcln.querySelector(".secondaryInput");
   textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
   addEvenListenerToExpand(textArea);
+
+  listItemcln
+    .querySelector(".delete")
+    .addEventListener("click", () => deleteItem(inputValue._id));
+
   parent.prepend(listItemcln);
+}
+
+function deleteItem(itemId) {
+  document.querySelector(`[data-id="${itemId}"]`).remove();
+  fetch(`https://deleteme-6090.restdb.io/rest/card/${itemId}`, {
+    method: "delete",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data));
 }
 
 function addItem(inputValue, progress, parent) {
   event.preventDefault();
-
   postTodo(inputValue, progress, parent);
 }
 
@@ -111,19 +129,6 @@ function postTodo(inputValue, progress, parent) {
 //   })
 //     .then((d) => d.json())
 //     .then((t) => console.log(t.cards));
-// }
-
-// function deleteItem(id) {
-//   fetch(`https://deleteme-6090.restdb.io/rest/bands/${id}`, {
-//     method: "delete",
-//     headers: {
-//       "Content-Type": "application/json; charset=utf-8",
-//       "x-apikey": "5e9570bb436377171a0c2315",
-//       "cache-control": "no-cache",
-//     },
-//   })
-//     .then((res) => res.json())
-//     .then((data) => console.log(data));
 // }
 
 function addAutoExpand() {
