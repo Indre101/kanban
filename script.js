@@ -1,7 +1,7 @@
 window.addEventListener("DOMContentLoaded", init);
 
 function init() {
-  getData("progress", appendProgressCards);
+  getData("progress", displayProgresscards);
 }
 
 function getData(path, functiontoCall) {
@@ -17,20 +17,18 @@ function getData(path, functiontoCall) {
     .then((data) => data.forEach(functiontoCall));
 }
 
-function appendProgressCards(progress) {
+function displayProgresscards(progress) {
   const template = document.querySelector("template").content;
   const cln = template.cloneNode(true);
   cln.querySelector(".card-boxes").dataset.id = progress._id;
   cln.querySelector("h2").textContent = progress.title;
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
-  progress.cards.forEach((todoItem) => displayTodos(todoItem.title, list));
+  progress.cards.forEach((todoItem) => displayTodos(todoItem, list));
   cln
     .querySelector(".add")
     .addEventListener("click", () => addItem(inputValue, progress, list));
-
   document.querySelector(".cards-Container").appendChild(cln);
-  // addAutoExpand();
 }
 
 function addItem(inputValue, progress, parent) {
@@ -40,11 +38,13 @@ function addItem(inputValue, progress, parent) {
 }
 
 function displayTodos(inputValue, parent) {
+  console.log(inputValue);
   const listItemtemplate = document.querySelector(".list-item-template")
     .content;
   const listItemcln = listItemtemplate.cloneNode(true);
+  listItemcln.querySelector(".list-item").dataset.id = inputValue.id;
   const textArea = listItemcln.querySelector(".secondaryInput");
-  textArea.textContent = inputValue;
+  textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
   addEvenListenerToExpand(textArea);
   parent.append(listItemcln);
 }
