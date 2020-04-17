@@ -19,25 +19,24 @@
           <div class="list-item">
             <textarea
               class="primaryInput"
-              placeholder="Add new item"
+              name="description"
+              required
+              pattern=".*\S.*"
             ></textarea>
-            <div class="actions">
-              <button class="add">ok</button>
-            </div>
+            <button type="submit" class="add">ok</button>
           </div>
         </form>
       </div>
     </template>
 
     <template class="list-item-template">
-      <div class="list-item">
-        <textarea class="secondaryInput"></textarea>
-        <div class="actionstodo">
+      <form class="list-item">
+        <textarea class="secondaryInput" name="description"> </textarea>
+        <div class="actionstodo" data-active="false">
           <button class="edit">Edit</button>
           <button class="delete">delete</button>
-          <button class="delete">ok</button>
         </div>
-      </div>
+      </form>
     </template>
 
     <script src="script.js"></script>

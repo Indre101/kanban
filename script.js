@@ -62,11 +62,17 @@ function displayTodo(inputValue, parent) {
   const listItemtemplate = document.querySelector(".list-item-template")
     .content;
   const listItemcln = listItemtemplate.cloneNode(true);
-  listItemcln.querySelector(".list-item").dataset.id = inputValue._id;
+  const listItem = listItemcln.querySelector(".list-item");
+  listItem.dataset.id = inputValue._id;
   const textArea = listItemcln.querySelector(".secondaryInput");
   textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
   addEvenListenerToExpand(textArea);
+  const actionstodo = listItemcln.querySelector(".actionstodo");
 
+  listItem.addEventListener("click", () => {
+    actionstodo.dataset.active =
+      actionstodo.dataset.active === "false" ? "true" : "false";
+  });
   listItemcln
     .querySelector(".delete")
     .addEventListener("click", () => deleteItem(inputValue._id));
@@ -79,24 +85,26 @@ function displayTodo(inputValue, parent) {
 }
 
 function updateTodo(id, textArea) {
-  const newBand = {
-    title: textArea.id,
-  };
-  let postData = JSON.stringify(newBand);
-  fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
-    method: "put",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "x-apikey": "5e9570bb436377171a0c2315",
-      "cache-control": "no-cache",
-    },
-    body: postData,
-  })
-    .then((d) => d.json())
-    .then((t) => console.log(t.cards));
+  event.preventDefault();
+  // const newBand = {
+  //   title: textArea.id,
+  // };
+  // let postData = JSON.stringify(newBand);
+  // fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
+  //   method: "put",
+  //   headers: {
+  //     "Content-Type": "application/json; charset=utf-8",
+  //     "x-apikey": "5e9570bb436377171a0c2315",
+  //     "cache-control": "no-cache",
+  //   },
+  //   body: postData,
+  // })
+  //   .then((d) => d.json())
+  //   .then((t) => console.log(t.cards));
 }
 
 function deleteItem(itemId) {
+  event.preventDefault();
   document.querySelector(`[data-id="${itemId}"]`).remove();
   fetch(`https://deleteme-6090.restdb.io/rest/card/${itemId}`, {
     method: "delete",

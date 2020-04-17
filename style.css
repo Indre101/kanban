@@ -32,6 +32,7 @@ textarea {
   border: none;
   background-color: #ccc;
   transition: background-color 0.1s ease-in-out;
+  resize: none;
 }
 
 textarea:hover {
@@ -85,10 +86,15 @@ hr {
   background-color: #bd9424;
 }
 
-.actionstodo {
+.actionstodo[data-active="false"] {
   display: none;
 }
 
-textarea:focus .actionstodo {
+.list-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.actionstodo[data-active="true"] {
   display: block;
 }
