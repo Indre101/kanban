@@ -1,11 +1,14 @@
 window.addEventListener("DOMContentLoaded", init);
 
+const url = "https://deleteme-6090.restdb.io/rest/";
+const apiKey = "5e9570bb436377171a0c2315";
+
 function init() {
-  getData("progress", displayProgresscards);
+  getProgressCards("progress", displayProgresscards);
 }
 
-function getData(path, functiontoCall) {
-  fetch("https://deleteme-6090.restdb.io/rest/" + path, {
+function getProgressCards(path, functiontoCall) {
+  fetch(url + path, {
     method: "get",
     headers: {
       "Content-type": "application/json; charset=utf-8",
@@ -20,41 +23,60 @@ function getData(path, functiontoCall) {
 function displayProgresscards(progress) {
   const template = document.querySelector("template").content;
   const cln = template.cloneNode(true);
-  cln.querySelector(".card-boxes").dataset.id = progress._id;
+  cln.querySelector(".card-boxes").setAttribute("id", progress._id);
   cln.querySelector("h2").textContent = progress.title;
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
-  progress.cards.forEach((todoItem) => displayTodos(todoItem, list));
   cln
     .querySelector(".add")
     .addEventListener("click", () => addItem(inputValue, progress, list));
+  getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
+}
+
+function getTodoItems(id, parent) {
+  fetch(url + "card", {
+    method: "get",
+    headers: {
+      "Content-type": "application/json; charset=utf-8",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => data.forEach((item) => handleTodo(id, parent, item)));
+}
+
+function handleTodo(id, parent, inputValue) {
+  if (inputValue.progresscard[0]._id === id) {
+    displayTodo(inputValue, parent);
+  } else {
+    false;
+  }
+}
+
+function displayTodo(inputValue, parent) {
+  const listItemtemplate = document.querySelector(".list-item-template")
+    .content;
+  const listItemcln = listItemtemplate.cloneNode(true);
+  listItemcln.querySelector(".list-item").dataset.id = inputValue._id;
+  const textArea = listItemcln.querySelector(".secondaryInput");
+  textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
+  addEvenListenerToExpand(textArea);
+  parent.prepend(listItemcln);
 }
 
 function addItem(inputValue, progress, parent) {
   event.preventDefault();
-  postTodo(inputValue.value, progress, parent);
-}
 
-function displayTodos(inputValue, parent) {
-  console.log(inputValue.progresscard._id);
-  const listItemtemplate = document.querySelector(".list-item-template")
-    .content;
-  const listItemcln = listItemtemplate.cloneNode(true);
-  listItemcln.querySelector(".list-item").dataset.id =
-    inputValue.progresscard._id;
-  const textArea = listItemcln.querySelector(".secondaryInput");
-  textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
-  addEvenListenerToExpand(textArea);
-  parent.append(listItemcln);
+  postTodo(inputValue, progress, parent);
 }
 
 function postTodo(inputValue, progress, parent) {
   const newListItem = {
-    title: inputValue,
+    title: inputValue.value,
     progresscard: progress,
   };
-  updateProgressCard(progress, newListItem);
   fetch(`https://deleteme-6090.restdb.io/rest/card`, {
     method: "post",
     headers: {
@@ -67,26 +89,29 @@ function postTodo(inputValue, progress, parent) {
   })
     .then((res) => res.json())
 
-    .then((d) => displayTodos(d, parent));
+    .then((d) => {
+      console.log(d);
+      handleTodo(progress._id, parent, d);
+    });
 }
 
-function updateProgressCard(progress, item) {
-  const newBand = {
-    $push: { cards: item },
-  };
-  let postData = JSON.stringify(newBand);
-  fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
-    method: "put",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "x-apikey": "5e9570bb436377171a0c2315",
-      "cache-control": "no-cache",
-    },
-    body: postData,
-  })
-    .then((d) => d.json())
-    .then((t) => console.log(t));
-}
+// function updateProgressCard(progress, item, parent) {
+//   const newBand = {
+//     $push: { cards: item },
+//   };
+//   let postData = JSON.stringify(newBand);
+//   fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
+//     method: "put",
+//     headers: {
+//       "Content-Type": "application/json; charset=utf-8",
+//       "x-apikey": "5e9570bb436377171a0c2315",
+//       "cache-control": "no-cache",
+//     },
+//     body: postData,
+//   })
+//     .then((d) => d.json())
+//     .then((t) => console.log(t.cards));
+// }
 
 // function deleteItem(id) {
 //   fetch(`https://deleteme-6090.restdb.io/rest/bands/${id}`, {
