@@ -30,12 +30,23 @@ form {
 textarea {
   font-size: 1rem;
   border: none;
+  background-color: #ccc;
+  transition: background-color 0.1s ease-in-out;
+}
+
+textarea:hover {
+  background-color: rgb(129, 129, 129);
 }
 
 .secondaryInput,
 .primaryInput {
   border-radius: 10px;
   width: 250px;
+}
+
+.secondaryInput,
+textarea:focus {
+  background-color: #fff;
 }
 hr {
   width: 100%;
@@ -72,4 +83,12 @@ hr {
 [data-id="5e98735136cd7f39000216bc"] {
   order: 2;
   background-color: #bd9424;
+}
+
+.actionstodo {
+  display: none;
+}
+
+textarea:focus .actionstodo {
+  display: block;
 }

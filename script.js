@@ -27,9 +27,12 @@ function displayProgresscards(progress) {
   cln.querySelector("h2").textContent = progress.title;
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
-  cln
-    .querySelector(".add")
-    .addEventListener("click", () => addItem(inputValue, progress, list));
+
+  cln.querySelector(".add").addEventListener("click", () => {
+    addItem(inputValue, progress, list);
+    inputValue.value = "";
+  });
+
   getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
 }
@@ -68,7 +71,29 @@ function displayTodo(inputValue, parent) {
     .querySelector(".delete")
     .addEventListener("click", () => deleteItem(inputValue._id));
 
+  listItemcln.querySelector(".edit").addEventListener("click", () => {
+    updateTodo(inputValue._id, textArea);
+  });
+
   parent.prepend(listItemcln);
+}
+
+function updateTodo(id, textArea) {
+  const newBand = {
+    title: textArea.id,
+  };
+  let postData = JSON.stringify(newBand);
+  fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
+    method: "put",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+    body: postData,
+  })
+    .then((d) => d.json())
+    .then((t) => console.log(t.cards));
 }
 
 function deleteItem(itemId) {
@@ -112,24 +137,6 @@ function postTodo(inputValue, progress, parent) {
       handleTodo(progress._id, parent, d);
     });
 }
-
-// function updateProgressCard(progress, item, parent) {
-//   const newBand = {
-//     $push: { cards: item },
-//   };
-//   let postData = JSON.stringify(newBand);
-//   fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
-//     method: "put",
-//     headers: {
-//       "Content-Type": "application/json; charset=utf-8",
-//       "x-apikey": "5e9570bb436377171a0c2315",
-//       "cache-control": "no-cache",
-//     },
-//     body: postData,
-//   })
-//     .then((d) => d.json())
-//     .then((t) => console.log(t.cards));
-// }
 
 function addAutoExpand() {
   const textareas = document.querySelectorAll("textarea");
