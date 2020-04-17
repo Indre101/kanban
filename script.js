@@ -33,23 +33,23 @@ function displayProgresscards(progress) {
 
 function addItem(inputValue, progress, parent) {
   event.preventDefault();
-  postTodo(inputValue.value, progress);
-  displayTodos(inputValue.value, parent);
+  postTodo(inputValue.value, progress, parent);
 }
 
 function displayTodos(inputValue, parent) {
-  console.log(inputValue);
+  console.log(inputValue.progresscard._id);
   const listItemtemplate = document.querySelector(".list-item-template")
     .content;
   const listItemcln = listItemtemplate.cloneNode(true);
-  listItemcln.querySelector(".list-item").dataset.id = inputValue.id;
+  listItemcln.querySelector(".list-item").dataset.id =
+    inputValue.progresscard._id;
   const textArea = listItemcln.querySelector(".secondaryInput");
   textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
   addEvenListenerToExpand(textArea);
   parent.append(listItemcln);
 }
 
-function postTodo(inputValue, progress) {
+function postTodo(inputValue, progress, parent) {
   const newListItem = {
     title: inputValue,
     progresscard: progress,
@@ -66,7 +66,8 @@ function postTodo(inputValue, progress) {
     body: JSON.stringify(newListItem),
   })
     .then((res) => res.json())
-    .then((d) => console.log(d));
+
+    .then((d) => displayTodos(d, parent));
 }
 
 function updateProgressCard(progress, item) {
