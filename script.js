@@ -23,7 +23,7 @@ function getProgressCards(path, functiontoCall) {
 function displayProgresscards(progress) {
   const template = document.querySelector("template").content;
   const cln = template.cloneNode(true);
-  cln.querySelector(".card-boxes").setAttribute("id", progress._id);
+  cln.querySelector(".card-boxes").dataset.id = progress._id;
   cln.querySelector("h2").textContent = progress.title;
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
