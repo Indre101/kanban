@@ -45,16 +45,20 @@
 
         <hr />
         <div class="list"></div>
-        <form action="">
+        <form class="addItemForm" action="">
           <div class="list-item">
             <textarea
               class="primaryInput"
               name="description"
-              required
               pattern=".*\S.*"
               placeholder="Add new item"
             ></textarea>
-            <button type="submit" class="add">ok</button>
+            <div class="actions">
+              <button type="submit" class="add">ok</button>
+              <button class="more">
+                <img src="./more.svg" alt="More" />
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -73,6 +77,49 @@
       </form>
     </template>
 
+    <div class="more-info-container">
+      <form class="more-info-inner">
+        <div class="shortName">
+          <label for="shortName">Title</label>
+          <input id="shortName" type="text" />
+        </div>
+
+        <textarea
+          class="description"
+          name="description"
+          cols="30"
+          rows="10"
+          placeholder="details"
+        ></textarea>
+
+        <div>
+          <label for="author">Author</label>
+          <input id="author" type="text" />
+        </div>
+
+        <div>
+          <label for="estimate">Estimated time in hours</label>
+          <input id="estimate" type="number" min="0" />
+        </div>
+
+        <div>
+          <label for="dueDate">Due date</label>
+          <input id="dueDate" type="date" />
+        </div>
+        <div>
+          <label for="dateAdded">End date</label>
+          <input id="dateAdded" type="date" />
+        </div>
+
+        <select name="moveTo" id="moveTo">
+          <option value="done">Done</option>
+          <option value="to do">To do</option>
+          <option value="in progress">Done</option>
+        </select>
+
+        <button class="submitLongform" type="submit">Save</button>
+      </form>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>

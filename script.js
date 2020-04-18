@@ -34,15 +34,17 @@ function displayProgresscards(progress) {
   cln.querySelector("h2").textContent = progress.title;
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
+  const todoSmallForm = cln.querySelector("form");
 
-  cln.querySelector(".add").addEventListener("click", () => {
+  todoSmallForm.addEventListener("submit", (e) => {
     addItem(inputValue, progress, list);
-    inputValue.value = "";
+    todoSmallForm.reset();
   });
 
   getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
 }
+
 const hidePreloader = () =>
   (document.querySelector(".preloader").dataset.active = "false");
 
