@@ -41,8 +41,19 @@ function displayProgresscards(progress) {
     todoSmallForm.reset();
   });
 
+  cln
+    .querySelector(".more")
+    .addEventListener("click", (event) => addMoredetails(inputValue));
+
   getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
+}
+
+function addMoredetails(inputValue) {
+  console.log(inputValue);
+  document.querySelector(".more-info-container").dataset.active = "true";
+  document.querySelector("#shortName").value = inputValue.value;
+  // document.querySelector(".shortName").textContent = "testing";
 }
 
 const hidePreloader = () =>
@@ -89,9 +100,9 @@ function displayTodo(inputValue, parent) {
     .querySelector(".delete")
     .addEventListener("click", () => deleteItem(inputValue._id));
 
-  listItemcln.querySelector(".edit").addEventListener("click", () => {
-    updateTodo(inputValue._id, textArea);
-  });
+  // listItemcln.querySelector(".edit").addEventListener("click", () => {
+  //   updateTodo(inputValue._id, textArea);
+  // });
 
   parent.append(listItemcln);
   hidePreloader();
@@ -99,6 +110,7 @@ function displayTodo(inputValue, parent) {
 
 function updateTodo(id, textArea) {
   event.preventDefault();
+  document.querySelector(".more-info-container").dataset.active = "true";
   // const newBand = {
   //   title: textArea.id,
   // };
