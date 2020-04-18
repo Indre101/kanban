@@ -43,6 +43,8 @@ function displayProgresscards(progress) {
   getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
 }
+const hidePreloader = () =>
+  (document.querySelector(".preloader").dataset.active = "false");
 
 function getTodoItems(id, parent) {
   fetch(url + "card", {
@@ -89,6 +91,7 @@ function displayTodo(inputValue, parent) {
   });
 
   parent.prepend(listItemcln);
+  hidePreloader();
 }
 
 function updateTodo(id, textArea) {
