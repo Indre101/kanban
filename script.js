@@ -82,6 +82,7 @@ function displayTodo(inputValue, parent) {
     actionstodo.dataset.active =
       actionstodo.dataset.active === "false" ? "true" : "false";
   });
+
   listItemcln
     .querySelector(".delete")
     .addEventListener("click", () => deleteItem(inputValue._id));

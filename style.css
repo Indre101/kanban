@@ -154,14 +154,7 @@ form {
   align-items: center;
   border: 1px solid lightgrey;
   border-radius: 15px;
-  background-color: #ccc;
   transition: background-color 0.1s ease-in-out;
-}
-
-.secondaryInput {
-  background-color: #ccc;
-  padding: 0.4rem;
-  width: 250px;
 }
 
 .text-area img {
@@ -177,6 +170,9 @@ form {
 }
 
 textarea {
+  padding: 0.4rem;
+  width: 250px;
+  background-color: #ccc;
   font-size: 1rem;
   border: none;
   resize: none;
