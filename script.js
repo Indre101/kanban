@@ -5,6 +5,13 @@ const apiKey = "5e9570bb436377171a0c2315";
 
 function init() {
   getProgressCards("progress", displayProgresscards);
+  showTaskOrganiser();
+}
+
+function showTaskOrganiser() {
+  document.querySelector(".start").onclick = function () {
+    document.querySelector(".landing-page-container").dataset.active = "false";
+  };
 }
 
 function getProgressCards(path, functiontoCall) {
