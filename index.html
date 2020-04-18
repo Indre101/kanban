@@ -62,9 +62,12 @@
 
     <template class="list-item-template">
       <form class="list-item">
-        <textarea class="secondaryInput" name="description"> </textarea>
+        <div class="text-area">
+          <textarea class="secondaryInput" name="description"> </textarea>
+          <img src="./pencil.svg" alt="Edit" />
+        </div>
         <div class="actionstodo" data-active="false">
-          <button class="edit">Edit</button>
+          <button class="edit">Save</button>
           <button class="delete">delete</button>
         </div>
       </form>
