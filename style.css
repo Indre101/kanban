@@ -167,6 +167,11 @@ textarea:hover {
   width: 250px;
 }
 
+.secondaryInput {
+  border: 1px solid lightgrey;
+  padding: 0.4rem;
+}
+
 .secondaryInput,
 textarea:focus {
   background-color: #fff;
@@ -185,27 +190,25 @@ hr {
 }
 
 .card-boxes {
-  background-color: rgb(53, 52, 59);
-  color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   height: 100vh;
+  background-color: #fff;
+  color: black;
+  box-shadow: 6px 3px 20px 6px grey;
 }
 
 .card-boxes:nth-of-type(2) {
-  background-color: #4e6f51;
 }
 
 [data-id="5e98732636cd7f39000216b6"] {
   order: 1;
-  background-color: #051c50e8;
 }
 
 [data-id="5e98735136cd7f39000216bc"] {
   order: 2;
-  background-color: #bd9424;
 }
 
 .actionstodo[data-active="false"] {

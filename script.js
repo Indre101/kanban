@@ -90,7 +90,7 @@ function displayTodo(inputValue, parent) {
     updateTodo(inputValue._id, textArea);
   });
 
-  parent.prepend(listItemcln);
+  parent.append(listItemcln);
   hidePreloader();
 }
 
