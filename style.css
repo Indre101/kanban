@@ -200,8 +200,7 @@ textarea:focus {
 hr {
   width: 100%;
 }
-.add {
-  background-color: #0b8a0b;
+.cards-Container button {
   border: none;
   color: white;
   width: 80px;
@@ -209,6 +208,17 @@ hr {
   font-size: 15px;
   border-radius: 15px;
   margin: 0.4rem 0;
+}
+
+.add {
+  background-color: #0b8a0b;
+}
+
+.delete {
+  background-color: #b70505;
+}
+.actionstodo .edit {
+  background-color: #0b8a0b;
 }
 
 .card-boxes h2 {
