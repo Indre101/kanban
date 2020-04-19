@@ -37,7 +37,12 @@ function displayProgresscards(progress) {
   const todoSmallForm = cln.querySelector("form");
 
   todoSmallForm.addEventListener("submit", (e) => {
-    addItem(inputValue, progress, list);
+    const todo = {
+      title: inputValue.value,
+      progresscard: progress,
+    };
+
+    addItem(todo, progress, list);
     todoSmallForm.reset();
   });
 
@@ -53,7 +58,6 @@ function displayProgresscards(progress) {
 
 const setDefaultTodaysDate = () => {
   document.querySelector("#dateAdded").valueAsDate = new Date();
-  console.log(document.querySelector("#dateAdded").valueAsDate);
 };
 
 function addMoredetails(inputValue, progress, parent) {
@@ -66,32 +70,32 @@ function addMoredetails(inputValue, progress, parent) {
 
   document.querySelector(".submitLongform").onclick = function () {
     event.preventDefault();
-
-    addnewDetailedItem(progress, parent);
+    const newListItem = {
+      title: document.querySelector("#shortName").value,
+      description: document.querySelector(".description").value,
+      estimate: document.querySelector("#estimate").value,
+      deadline: document.querySelector("#dueDate").value,
+      author: document.querySelector("#author").value,
+      dateadded: document.querySelector("#dateAdded").value,
+      progresscard: progress,
+    };
+    postTodo(newListItem, progress, parent);
+    inputValue.value = "";
   };
 }
 
 function setDefaultSelected(progress) {
   const options = document.querySelectorAll("option");
+
+  console.log(getSelecedCategory());
   options.forEach((optionItem) => {
     if (optionItem.value === progress.title) {
       optionItem.selected = true;
-      console.log(optionItem);
     }
   });
 }
 
-function addnewDetailedItem(progress, parent) {
-  const newListItem = {
-    title: document.querySelector("#shortName").value,
-    description: document.querySelector(".description").value,
-    estimate: document.querySelector("#estimate").value,
-    deadline: document.querySelector("#dueDate").value,
-    author: document.querySelector("#author").value,
-    dateadded: document.querySelector("#dateAdded").value,
-    progresscard: progress,
-  };
-
+function postTodo(inputValue, progress, parent) {
   fetch(`https://deleteme-6090.restdb.io/rest/card`, {
     method: "post",
     headers: {
@@ -100,7 +104,7 @@ function addnewDetailedItem(progress, parent) {
       "x-apikey": "5e9570bb436377171a0c2315",
       "cache-control": "no-cache",
     },
-    body: JSON.stringify(newListItem),
+    body: JSON.stringify(inputValue),
   })
     .then((res) => res.json())
 
@@ -109,6 +113,30 @@ function addnewDetailedItem(progress, parent) {
       handleTodo(progress._id, parent, d);
     });
   document.querySelector(".more-info-container").dataset.active = "false";
+}
+
+function getSelecedCategory() {
+  const options = [...document.querySelectorAll("option")];
+  const selectedOption = options.filter((item) => item.selected);
+  let selectedProgress;
+  fetch(url + "progress", {
+    method: "get",
+    headers: {
+      "Content-type": "application/json; charset=utf-8",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) =>
+      data.forEach(
+        (processItem) =>
+          (selectedProgress =
+            processItem.title === selectedOption[0].value && processItem)
+      )
+    );
+
+  return selectedProgress;
 }
 
 const hidePreloader = () =>
@@ -201,31 +229,6 @@ function deleteItem(itemId) {
 function addItem(inputValue, progress, parent) {
   event.preventDefault();
   postTodo(inputValue, progress, parent);
-}
-
-function postTodo(inputValue, progress, parent) {
-  const newListItem = {
-    title: inputValue.value,
-    progresscard: progress,
-  };
-
-  console.log(progress);
-  fetch(`https://deleteme-6090.restdb.io/rest/card`, {
-    method: "post",
-    headers: {
-      Accept: "application/json",
-      "Content-type": "application/json",
-      "x-apikey": "5e9570bb436377171a0c2315",
-      "cache-control": "no-cache",
-    },
-    body: JSON.stringify(newListItem),
-  })
-    .then((res) => res.json())
-
-    .then((d) => {
-      console.log(d);
-      handleTodo(progress._id, parent, d);
-    });
 }
 
 function addAutoExpand() {
