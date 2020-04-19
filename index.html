@@ -112,14 +112,17 @@
         </div>
         <div>
           <label for="dateAdded">Date added</label>
-          <input id="dateAdded" type="date" />
+          <input id="dateAdded" type="date" value="" />
         </div>
 
-        <select name="moveTo" id="moveTo">
-          <option value="done">Done</option>
-          <option value="to do">To do</option>
-          <option value="in progress">Done</option>
-        </select>
+        <div class="moveTo">
+          <label for="moveTo">Move to</label>
+          <select name="moveTo" id="moveTo">
+            <option value="done">Done</option>
+            <option value="to do">To do</option>
+            <option value="in progress">In progress</option>
+          </select>
+        </div>
 
         <div class="anctions-more-info">
           <button class="cancel" type="button">Cancel</button>

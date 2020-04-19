@@ -41,53 +41,54 @@ function displayProgresscards(progress) {
     todoSmallForm.reset();
   });
 
-  cln
-    .querySelector(".more")
-    .addEventListener("click", (event) =>
-      addMoredetails(inputValue, progress, list)
-    );
+  cln.querySelector(".more").addEventListener("click", (event) => {
+    setDefaultTodaysDate();
+    addMoredetails(inputValue, progress, list);
+    setDefaultSelected(progress);
+  });
 
   getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
 }
 
+const setDefaultTodaysDate = () => {
+  document.querySelector("#dateAdded").valueAsDate = new Date();
+  console.log(document.querySelector("#dateAdded").valueAsDate);
+};
+
 function addMoredetails(inputValue, progress, parent) {
-  console.log(inputValue);
   document.querySelector(".cancel").onclick = function () {
     document.querySelector(".more-info-container").dataset.active = "false";
   };
   document.querySelector(".more-info-container").dataset.active = "true";
   document.querySelector("#shortName").value = inputValue.value;
-
   const formMoreInfo = document.querySelector(".more-info-inner");
 
   document.querySelector(".submitLongform").onclick = function () {
-    console.log("clickded");
     event.preventDefault();
+
     addnewDetailedItem(progress, parent);
   };
-  // formMoreInfo.addEventListener(
-  //   "submit"
-  //   // addnewDetailedItem(todoItem, progress, parent)
-  // );
-  // document.querySelector(".shortName").textContent = "testing";
+}
+
+function setDefaultSelected(progress) {
+  const options = document.querySelectorAll("option");
+  options.forEach((optionItem) => {
+    if (optionItem.value === progress.title) {
+      optionItem.selected = true;
+      console.log(optionItem);
+    }
+  });
 }
 
 function addnewDetailedItem(progress, parent) {
-  const today = new Date();
-  const date =
-    today.getFullYear() +
-    "-" +
-    (today.getMonth() + 1) +
-    "-" +
-    (today.getDate() + 1);
   const newListItem = {
     title: document.querySelector("#shortName").value,
     description: document.querySelector(".description").value,
     estimate: document.querySelector("#estimate").value,
     deadline: document.querySelector("#dueDate").value,
     author: document.querySelector("#author").value,
-    dateadded: date,
+    dateadded: document.querySelector("#dateAdded").value,
     progresscard: progress,
   };
 
@@ -207,6 +208,8 @@ function postTodo(inputValue, progress, parent) {
     title: inputValue.value,
     progresscard: progress,
   };
+
+  console.log(progress);
   fetch(`https://deleteme-6090.restdb.io/rest/card`, {
     method: "post",
     headers: {
