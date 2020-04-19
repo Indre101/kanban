@@ -52,6 +52,7 @@
               name="description"
               pattern=".*\S.*"
               placeholder="Add new item"
+              required
             ></textarea>
             <div class="actions">
               <button type="submit" class="add">ok</button>
@@ -67,13 +68,13 @@
     <template class="list-item-template">
       <form class="list-item">
         <div class="text-area">
-          <textarea class="secondaryInput" name="description" value="">
+          <textarea class="secondaryInput" name="description" value="" required>
           </textarea>
           <img src="./pencil.svg" alt="Edit" />
         </div>
         <div class="actionstodo" data-active="false">
-          <button class="edit">Save</button>
-          <button class="more">
+          <button class="save" type="button">Save</button>
+          <button class="more" type="button">
             <img src="./more.svg" alt="More" />
           </button>
           <button class="delete">delete</button>
@@ -85,7 +86,7 @@
       <form class="more-info-inner">
         <div class="shortName">
           <label for="shortName">Title</label>
-          <input id="shortName" type="text" value="" />
+          <input id="shortName" type="text" value="" required />
         </div>
 
         <textarea
@@ -108,16 +109,16 @@
 
         <div>
           <label for="dueDate">Due date</label>
-          <input id="dueDate" type="date" />
+          <input id="dueDate" type="date" pattern="YYYY-MM-DD" required />
         </div>
         <div>
           <label for="dateAdded">Date added</label>
-          <input id="dateAdded" type="date" value="" />
+          <input id="dateAdded" type="date" value="" pattern="YYYY-MM-DD" />
         </div>
 
         <div class="moveTo">
           <label for="moveTo">Move to</label>
-          <select name="moveTo" id="moveTo">
+          <select name="moveTo" id="moveTo" required>
             <option value="done">Done</option>
             <option value="to do">To do</option>
             <option value="in progress">In progress</option>

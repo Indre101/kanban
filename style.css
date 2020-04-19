@@ -229,7 +229,7 @@ div.more,
 .more {
   background-color: #ffbc00;
 }
-.actionstodo .edit {
+.actionstodo .save {
   background-color: #0b8a0b;
 }
 
@@ -281,10 +281,11 @@ MORE INFO
   height: 100vh;
   top: 0;
   z-index: 10;
-  background: #969696;
   justify-content: center;
   align-items: center;
   display: none;
+  background: linear-gradient(45deg, #f3f3f3, #000000d9);
+  border-radius: 15px;
 }
 
 .more-info-container[data-active="true"] {
@@ -293,11 +294,12 @@ MORE INFO
 
 .more-info-inner {
   height: 100vh;
-  display: flex;
   flex-direction: column;
-  width: 50vw;
   margin: 0 auto;
-  height: 70vh;
+  height: fit-content;
+  background: #afafb7b3;
+  padding: 2rem;
+  border-radius: 15px;
 }
 
 .more-info-inner textarea,
@@ -317,6 +319,13 @@ MORE INFO
   flex-direction: column;
 }
 
+.more-info-inner * {
+  font-size: 1rem;
+}
+
+.more-info-inner label {
+  margin-bottom: 0.3rem;
+}
 .submitLongform {
   display: flex;
   justify-content: center;
@@ -324,6 +333,7 @@ MORE INFO
 }
 
 .anctions-more-info {
+  margin-top: 1.5rem;
   display: flex;
   flex-direction: row;
 }

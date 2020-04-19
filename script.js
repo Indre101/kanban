@@ -6,6 +6,11 @@ const apiKey = "5e9570bb436377171a0c2315";
 function init() {
   getProgressCards("progress", displayProgresscards);
   showTaskOrganiser();
+
+  document.querySelector(".cancel").onclick = function () {
+    event.preventDefault();
+    document.querySelector(".more-info-container").dataset.active = "false";
+  };
 }
 
 function showTaskOrganiser() {
@@ -24,7 +29,11 @@ function getProgressCards(path, functiontoCall) {
     },
   })
     .then((res) => res.json())
-    .then((data) => data.forEach(functiontoCall));
+    .then((data) => data.forEach(functiontoCall))
+    .then(() => {
+      getTodoItems();
+      hidePreloader();
+    });
 }
 
 function displayProgresscards(progress) {
@@ -51,24 +60,23 @@ function displayProgresscards(progress) {
     addMoredetails(inputValue, progress, list);
     setDefaultSelected(progress);
   });
-
-  getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
 }
 
 const setDefaultTodaysDate = () => {
-  document.querySelector("#dateAdded").valueAsDate = new Date();
+  const today = new Date();
+  const todayFormated = today.toISOString().slice(0, 10);
+  document.querySelector("#dateAdded").value = todayFormated;
+  document.querySelector("#dueDate").setAttribute("min", todayFormated);
 };
 
 function addMoredetails(inputValue, progress, parent) {
-  document.querySelector(".cancel").onclick = function () {
-    document.querySelector(".more-info-container").dataset.active = "false";
-  };
   document.querySelector(".more-info-container").dataset.active = "true";
   document.querySelector("#shortName").value = inputValue.value;
   const formMoreInfo = document.querySelector(".more-info-inner");
 
-  document.querySelector(".submitLongform").onclick = function () {
+  // document.querySelector(".submitLongform")
+  document.querySelector(".more-info-inner").addEventListener("submit", () => {
     event.preventDefault();
     const testingOne = getSelecedCategory().then((data) => {
       const newListItem = {
@@ -80,10 +88,12 @@ function addMoredetails(inputValue, progress, parent) {
         dateadded: document.querySelector("#dateAdded").value,
         progresscard: data[0],
       };
-      postTodo(newListItem, newListItem.progresscard);
+      console.log(newListItem.progresscard);
+      postTodo(newListItem);
       inputValue.value = "";
+      formMoreInfo.reset();
     });
-  };
+  });
 }
 
 function setDefaultSelected(progress) {
@@ -97,7 +107,7 @@ function setDefaultSelected(progress) {
   });
 }
 
-function postTodo(inputValue, progress) {
+function postTodo(newListItem) {
   fetch(`https://deleteme-6090.restdb.io/rest/card`, {
     method: "post",
     headers: {
@@ -106,12 +116,12 @@ function postTodo(inputValue, progress) {
       "x-apikey": "5e9570bb436377171a0c2315",
       "cache-control": "no-cache",
     },
-    body: JSON.stringify(inputValue),
+    body: JSON.stringify(newListItem),
   })
     .then((res) => res.json())
 
-    .then((d) => {
-      handleTodo(progress._id, d);
+    .then((todo) => {
+      displayTodo(todo);
     });
   document.querySelector(".more-info-container").dataset.active = "false";
 }
@@ -145,7 +155,7 @@ const selectProgress = (data, selectedOption) =>
 const hidePreloader = () =>
   (document.querySelector(".preloader").dataset.active = "false");
 
-function getTodoItems(id, parent) {
+function getTodoItems() {
   fetch(url + "card", {
     method: "get",
     headers: {
@@ -155,15 +165,7 @@ function getTodoItems(id, parent) {
     },
   })
     .then((res) => res.json())
-    .then((data) => data.forEach((item) => handleTodo(id, item)));
-}
-
-function handleTodo(id, inputValue) {
-  if (inputValue.progresscard[0]._id === id) {
-    displayTodo(inputValue);
-  } else {
-    return false;
-  }
+    .then((data) => data.forEach((item) => displayTodo(item)));
 }
 
 function displayTodo(inputValue) {
@@ -176,40 +178,89 @@ function displayTodo(inputValue) {
   textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
   addEvenListenerToExpand(textArea);
   const actionstodo = listItemcln.querySelector(".actionstodo");
+  actionstodo.dataset.parent = inputValue._id;
 
   listItem.addEventListener("click", () => {
-    actionstodo.dataset.active =
-      actionstodo.dataset.active === "false" ? "true" : "false";
+    const actionsTodos = document.querySelectorAll(".actionstodo");
+    actionsTodos.forEach((element) => {
+      element.dataset.active = "false";
+    });
+    listItem.querySelector(".actionstodo").dataset.active = "true";
   });
 
   listItemcln
     .querySelector(".delete")
     .addEventListener("click", () => deleteItem(inputValue._id));
 
+  listItemcln.querySelector(".save").addEventListener("click", () => {
+    listItem.querySelector(".actionstodo").dataset.active = "false";
+    updateTodo(inputValue);
+  });
+
+  listItemcln.querySelector(".more").addEventListener("click", () => {
+    event.preventDefault();
+
+    assignDetailedValues(inputValue);
+  });
+  console.log(inputValue);
+
+  console.log(inputValue.progresscard[0]._id);
   document
     .querySelector(`[data-id="${inputValue.progresscard[0]._id}"] .list`)
     .append(listItemcln);
-  hidePreloader();
 }
 
-function updateTodo(id, textArea) {
+function assignDetailedValues(todo) {
   event.preventDefault();
+  const dueDate = new Date(todo.deadline);
+  const dueDateFormated = dueDate.toISOString().slice(0, 10);
+
+  const datecreated = new Date(todo.dateadded);
+  const dateCreatedFormated = datecreated.toISOString().slice(0, 10);
+  document.querySelector("#dueDate").setAttribute("min", todayFormated);
+
   document.querySelector(".more-info-container").dataset.active = "true";
-  // const newBand = {
-  //   title: textArea.id,
-  // };
-  // let postData = JSON.stringify(newBand);
-  // fetch(`https://deleteme-6090.restdb.io/rest/progress/${progress._id}`, {
-  //   method: "put",
-  //   headers: {
-  //     "Content-Type": "application/json; charset=utf-8",
-  //     "x-apikey": "5e9570bb436377171a0c2315",
-  //     "cache-control": "no-cache",
-  //   },
-  //   body: postData,
-  // })
-  //   .then((d) => d.json())
-  //   .then((t) => console.log(t.cards));
+  document.querySelector("#shortName").value = todo.title ? todo.title : null;
+  document.querySelector(".description").value = todo.description
+    ? todo.description
+    : null;
+  document.querySelector("#estimate").value = todo.estimate
+    ? todo.estimate
+    : null;
+  document.querySelector("#dueDate").value = dueDateFormated
+    ? dueDateFormated
+    : null;
+  document.querySelector("#author").value = todo.author ? todo.author : null;
+
+  document.querySelector("#dateAdded").value = dateCreatedFormated
+    ? dateCreatedFormated
+    : null;
+  setDefaultSelected(todo.progresscard[0]);
+}
+
+function updateTodo(todo) {
+  event.preventDefault();
+  const todoItemIntheDom = document.querySelector(`[data-id="${todo._id}"]`);
+  const newBand = {
+    title: todoItemIntheDom.querySelector("textarea").value,
+  };
+  let postData = JSON.stringify(newBand);
+  fetch(`https://deleteme-6090.restdb.io/rest/card/${todo._id}`, {
+    method: "put",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+    body: postData,
+  })
+    .then((d) => d.json())
+    .then((item) => assingUpdatedValues(item, todoItemIntheDom));
+}
+
+function assingUpdatedValues(todo, todoItemIntheDom) {
+  todoItemIntheDom.querySelector("textarea").value = todo.title;
+  console.log(todo);
 }
 
 function deleteItem(itemId) {
