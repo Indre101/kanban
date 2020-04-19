@@ -42,7 +42,7 @@ function displayProgresscards(progress) {
       progresscard: progress,
     };
 
-    addItem(todo, progress, list);
+    addItem(todo, progress);
     todoSmallForm.reset();
   });
 
@@ -70,17 +70,19 @@ function addMoredetails(inputValue, progress, parent) {
 
   document.querySelector(".submitLongform").onclick = function () {
     event.preventDefault();
-    const newListItem = {
-      title: document.querySelector("#shortName").value,
-      description: document.querySelector(".description").value,
-      estimate: document.querySelector("#estimate").value,
-      deadline: document.querySelector("#dueDate").value,
-      author: document.querySelector("#author").value,
-      dateadded: document.querySelector("#dateAdded").value,
-      progresscard: progress,
-    };
-    postTodo(newListItem, progress, parent);
-    inputValue.value = "";
+    const testingOne = getSelecedCategory().then((data) => {
+      const newListItem = {
+        title: document.querySelector("#shortName").value,
+        description: document.querySelector(".description").value,
+        estimate: document.querySelector("#estimate").value,
+        deadline: document.querySelector("#dueDate").value,
+        author: document.querySelector("#author").value,
+        dateadded: document.querySelector("#dateAdded").value,
+        progresscard: data[0],
+      };
+      postTodo(newListItem, newListItem.progresscard);
+      inputValue.value = "";
+    });
   };
 }
 
@@ -95,7 +97,7 @@ function setDefaultSelected(progress) {
   });
 }
 
-function postTodo(inputValue, progress, parent) {
+function postTodo(inputValue, progress) {
   fetch(`https://deleteme-6090.restdb.io/rest/card`, {
     method: "post",
     headers: {
@@ -109,35 +111,36 @@ function postTodo(inputValue, progress, parent) {
     .then((res) => res.json())
 
     .then((d) => {
-      console.log(d);
-      handleTodo(progress._id, parent, d);
+      handleTodo(progress._id, d);
     });
   document.querySelector(".more-info-container").dataset.active = "false";
 }
 
-function getSelecedCategory() {
+async function getSelecedCategory() {
   const options = [...document.querySelectorAll("option")];
   const selectedOption = options.filter((item) => item.selected);
-  let selectedProgress;
-  fetch(url + "progress", {
+  const selectedProgress = await fetch(url + "progress", {
     method: "get",
     headers: {
       "Content-type": "application/json; charset=utf-8",
       "x-apikey": "5e9570bb436377171a0c2315",
       "cache-control": "no-cache",
     },
-  })
-    .then((res) => res.json())
-    .then((data) =>
-      data.forEach(
-        (processItem) =>
-          (selectedProgress =
-            processItem.title === selectedOption[0].value && processItem)
-      )
-    );
+  });
 
-  return selectedProgress;
+  const response = await selectedProgress.json();
+
+  const selectedProgressItem = selectProgress(response, selectedOption);
+
+  console.log(selectedProgressItem);
+  return selectedProgressItem;
 }
+
+const selectProgress = (data, selectedOption) =>
+  data.filter(
+    (processItem) =>
+      processItem.title === selectedOption[0].value && processItem
+  );
 
 const hidePreloader = () =>
   (document.querySelector(".preloader").dataset.active = "false");
@@ -152,18 +155,18 @@ function getTodoItems(id, parent) {
     },
   })
     .then((res) => res.json())
-    .then((data) => data.forEach((item) => handleTodo(id, parent, item)));
+    .then((data) => data.forEach((item) => handleTodo(id, item)));
 }
 
-function handleTodo(id, parent, inputValue) {
+function handleTodo(id, inputValue) {
   if (inputValue.progresscard[0]._id === id) {
-    displayTodo(inputValue, parent);
+    displayTodo(inputValue);
   } else {
-    false;
+    return false;
   }
 }
 
-function displayTodo(inputValue, parent) {
+function displayTodo(inputValue) {
   const listItemtemplate = document.querySelector(".list-item-template")
     .content;
   const listItemcln = listItemtemplate.cloneNode(true);
@@ -183,11 +186,9 @@ function displayTodo(inputValue, parent) {
     .querySelector(".delete")
     .addEventListener("click", () => deleteItem(inputValue._id));
 
-  // listItemcln.querySelector(".edit").addEventListener("click", () => {
-  //   updateTodo(inputValue._id, textArea);
-  // });
-
-  parent.append(listItemcln);
+  document
+    .querySelector(`[data-id="${inputValue.progresscard[0]._id}"] .list`)
+    .append(listItemcln);
   hidePreloader();
 }
 
@@ -226,9 +227,9 @@ function deleteItem(itemId) {
     .then((data) => console.log(data));
 }
 
-function addItem(inputValue, progress, parent) {
+function addItem(inputValue, progress) {
   event.preventDefault();
-  postTodo(inputValue, progress, parent);
+  postTodo(inputValue, progress);
 }
 
 function addAutoExpand() {
