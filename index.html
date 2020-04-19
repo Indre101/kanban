@@ -55,7 +55,7 @@
             ></textarea>
             <div class="actions">
               <button type="submit" class="add">ok</button>
-              <button class="more">
+              <button class="more button" type="button">
                 <img src="./more.svg" alt="More" />
               </button>
             </div>
@@ -67,7 +67,8 @@
     <template class="list-item-template">
       <form class="list-item">
         <div class="text-area">
-          <textarea class="secondaryInput" name="description"> </textarea>
+          <textarea class="secondaryInput" name="description" value="">
+          </textarea>
           <img src="./pencil.svg" alt="Edit" />
         </div>
         <div class="actionstodo" data-active="false">
@@ -110,7 +111,7 @@
           <input id="dueDate" type="date" />
         </div>
         <div>
-          <label for="dateAdded">End date</label>
+          <label for="dateAdded">Date added</label>
           <input id="dateAdded" type="date" />
         </div>
 
@@ -120,7 +121,10 @@
           <option value="in progress">Done</option>
         </select>
 
-        <button class="submitLongform" type="submit">Save</button>
+        <div class="anctions-more-info">
+          <button class="cancel" type="button">Cancel</button>
+          <button class="submitLongform" type="submit">Save</button>
+        </div>
       </form>
     </div>
     <script src="script.js"></script>

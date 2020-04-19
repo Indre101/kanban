@@ -43,17 +43,71 @@ function displayProgresscards(progress) {
 
   cln
     .querySelector(".more")
-    .addEventListener("click", (event) => addMoredetails(inputValue));
+    .addEventListener("click", (event) =>
+      addMoredetails(inputValue, progress, list)
+    );
 
   getTodoItems(progress._id, list);
   document.querySelector(".cards-Container").appendChild(cln);
 }
 
-function addMoredetails(inputValue) {
+function addMoredetails(inputValue, progress, parent) {
   console.log(inputValue);
+  document.querySelector(".cancel").onclick = function () {
+    document.querySelector(".more-info-container").dataset.active = "false";
+  };
   document.querySelector(".more-info-container").dataset.active = "true";
   document.querySelector("#shortName").value = inputValue.value;
+
+  const formMoreInfo = document.querySelector(".more-info-inner");
+
+  document.querySelector(".submitLongform").onclick = function () {
+    console.log("clickded");
+    event.preventDefault();
+    addnewDetailedItem(progress, parent);
+  };
+  // formMoreInfo.addEventListener(
+  //   "submit"
+  //   // addnewDetailedItem(todoItem, progress, parent)
+  // );
   // document.querySelector(".shortName").textContent = "testing";
+}
+
+function addnewDetailedItem(progress, parent) {
+  const today = new Date();
+  const date =
+    today.getFullYear() +
+    "-" +
+    (today.getMonth() + 1) +
+    "-" +
+    (today.getDate() + 1);
+  const newListItem = {
+    title: document.querySelector("#shortName").value,
+    description: document.querySelector(".description").value,
+    estimate: document.querySelector("#estimate").value,
+    deadline: document.querySelector("#dueDate").value,
+    author: document.querySelector("#author").value,
+    dateadded: date,
+    progresscard: progress,
+  };
+
+  fetch(`https://deleteme-6090.restdb.io/rest/card`, {
+    method: "post",
+    headers: {
+      Accept: "application/json",
+      "Content-type": "application/json",
+      "x-apikey": "5e9570bb436377171a0c2315",
+      "cache-control": "no-cache",
+    },
+    body: JSON.stringify(newListItem),
+  })
+    .then((res) => res.json())
+
+    .then((d) => {
+      console.log(d);
+      handleTodo(progress._id, parent, d);
+    });
+  document.querySelector(".more-info-container").dataset.active = "false";
 }
 
 const hidePreloader = () =>
