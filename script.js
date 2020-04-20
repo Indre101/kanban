@@ -65,6 +65,7 @@ function displayProgresscards(progress) {
   cln.querySelector(".moreNewitem").addEventListener("click", () => {
     addedNewItem = true;
     setDefaultTodaysDate();
+    document.querySelector("#shortName").value = inputValue.value;
     addMoredetails(inputValue, progress);
   });
   document.querySelector(".cards-Container").appendChild(cln);
@@ -80,7 +81,6 @@ const setDefaultTodaysDate = () => {
 function addMoredetails(inputValue, progress) {
   event.preventDefault();
   document.querySelector(".more-info-container").dataset.active = "true";
-  document.querySelector("#shortName").value = inputValue.value;
   const formMoreInfo = document.querySelector(".more-info-inner");
   setDefaultSelected(progress);
   document
@@ -89,6 +89,7 @@ function addMoredetails(inputValue, progress) {
       event.preventDefault();
 
       if (addedNewItem) {
+        appendToTheEnd = false;
         const testingOne = getSelecedCategory().then((data) => {
           const newListItem = {
             title: document.querySelector("#shortName").value,
@@ -115,7 +116,11 @@ function addMoredetails(inputValue, progress) {
             dateadded: document.querySelector("#dateAdded").value,
             progresscard: data[0],
           };
-          updateTodo(event, inputValue.dataset.parent, newListItem);
+
+          appendToTheEnd =
+            progress._id === newListItem.progresscard._id ? false : true;
+
+          updateTodo(event, inputValue._id, newListItem);
         });
       }
     });
@@ -226,10 +231,11 @@ function displayTodo(inputValue) {
   });
 
   listItemcln.querySelector(".more").addEventListener("click", () => {
-    console.log("clicked the button");
+    console.log(inputValue);
     addedNewItem = false;
     event.preventDefault();
     assignDetailedValues(inputValue);
+    addMoredetails(inputValue, inputValue.progresscard[0]);
   });
 
   document
@@ -238,6 +244,7 @@ function displayTodo(inputValue) {
 }
 
 function assignDetailedValues(todo) {
+  console.log(todo);
   event.preventDefault();
   const dueDate = todo.deadline
     ? new Date(todo.deadline).toISOString().slice(0, 10)
@@ -296,6 +303,7 @@ function assingUpdatedValues(todo) {
       .querySelector(`[data-id="${todo.progresscard[0]._id}"] .list`)
       .append(itemInTheDom);
   }
+  document.querySelector(".more-info-container").dataset.active = "false";
 }
 
 function deleteItem(itemId) {
