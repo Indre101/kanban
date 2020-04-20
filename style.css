@@ -37,8 +37,9 @@ lanidng page
 }
 
 .landing-page-container img {
-  width: 15vw;
+  width: 20vw;
   margin: 3vh;
+  filter: drop-shadow(2px 4px 3px grey);
 }
 .landing-page-container h2 {
   text-transform: uppercase;
@@ -201,6 +202,7 @@ hr {
 }
 .cards-Container button,
 .cancel,
+.moreNewitem,
 div.more,
 .submitLongform {
   border: none;
@@ -209,7 +211,7 @@ div.more,
   height: 37px;
   font-size: 15px;
   border-radius: 15px;
-  margin: 0.4rem 0.2rem;
+  margin: 0.4rem 0rem;
 }
 
 .add,
@@ -222,11 +224,13 @@ div.more,
   background-color: #b70505;
 }
 
-.more img {
+.more img,
+.moreNewitem img {
   height: 1rem;
 }
 
-.more {
+.more,
+.moreNewitem {
   background-color: #ffbc00;
 }
 .actionstodo .save {

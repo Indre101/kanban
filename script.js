@@ -2,6 +2,8 @@ window.addEventListener("DOMContentLoaded", init);
 
 const url = "https://deleteme-6090.restdb.io/rest/";
 const apiKey = "5e9570bb436377171a0c2315";
+let addedNewItem = true;
+let appendToTheEnd = true;
 
 function init() {
   getProgressCards("progress", displayProgresscards);
@@ -44,6 +46,11 @@ function displayProgresscards(progress) {
   const list = cln.querySelector(".list");
   const inputValue = cln.querySelector(".primaryInput");
   const todoSmallForm = cln.querySelector("form");
+  inputValue.addEventListener("click", () => {
+    document
+      .querySelectorAll(".actionstodo")
+      .forEach((actionItem) => (actionItem.dataset.active = "false"));
+  });
 
   todoSmallForm.addEventListener("submit", (e) => {
     const todo = {
@@ -55,10 +62,10 @@ function displayProgresscards(progress) {
     todoSmallForm.reset();
   });
 
-  cln.querySelector(".more").addEventListener("click", (event) => {
+  cln.querySelector(".moreNewitem").addEventListener("click", () => {
+    addedNewItem = true;
     setDefaultTodaysDate();
-    addMoredetails(inputValue, progress, list);
-    setDefaultSelected(progress);
+    addMoredetails(inputValue, progress);
   });
   document.querySelector(".cards-Container").appendChild(cln);
 }
@@ -70,36 +77,53 @@ const setDefaultTodaysDate = () => {
   document.querySelector("#dueDate").setAttribute("min", todayFormated);
 };
 
-function addMoredetails(inputValue, progress, parent) {
+function addMoredetails(inputValue, progress) {
+  event.preventDefault();
   document.querySelector(".more-info-container").dataset.active = "true";
   document.querySelector("#shortName").value = inputValue.value;
   const formMoreInfo = document.querySelector(".more-info-inner");
+  setDefaultSelected(progress);
+  document
+    .querySelector(".submitLongform")
+    .addEventListener("click", (event) => {
+      event.preventDefault();
 
-  // document.querySelector(".submitLongform")
-  document.querySelector(".more-info-inner").addEventListener("submit", () => {
-    event.preventDefault();
-    const testingOne = getSelecedCategory().then((data) => {
-      const newListItem = {
-        title: document.querySelector("#shortName").value,
-        description: document.querySelector(".description").value,
-        estimate: document.querySelector("#estimate").value,
-        deadline: document.querySelector("#dueDate").value,
-        author: document.querySelector("#author").value,
-        dateadded: document.querySelector("#dateAdded").value,
-        progresscard: data[0],
-      };
-      console.log(newListItem.progresscard);
-      postTodo(newListItem);
-      inputValue.value = "";
-      formMoreInfo.reset();
+      if (addedNewItem) {
+        const testingOne = getSelecedCategory().then((data) => {
+          const newListItem = {
+            title: document.querySelector("#shortName").value,
+            description: document.querySelector(".description").value,
+            estimate: document.querySelector("#estimate").value,
+            deadline: document.querySelector("#dueDate").value,
+            author: document.querySelector("#author").value,
+            dateadded: document.querySelector("#dateAdded").value,
+            progresscard: data[0],
+          };
+          postTodo(newListItem);
+          inputValue.value = "";
+          formMoreInfo.reset();
+        });
+      } else {
+        console.log(inputValue);
+        const testingOne = getSelecedCategory().then((data) => {
+          const newListItem = {
+            title: document.querySelector("#shortName").value,
+            description: document.querySelector(".description").value,
+            estimate: document.querySelector("#estimate").value,
+            deadline: document.querySelector("#dueDate").value,
+            author: document.querySelector("#author").value,
+            dateadded: document.querySelector("#dateAdded").value,
+            progresscard: data[0],
+          };
+          updateTodo(event, inputValue.dataset.parent, newListItem);
+        });
+      }
     });
-  });
 }
 
 function setDefaultSelected(progress) {
   const options = document.querySelectorAll("option");
 
-  console.log(getSelecedCategory());
   options.forEach((optionItem) => {
     if (optionItem.value === progress.title) {
       optionItem.selected = true;
@@ -142,7 +166,6 @@ async function getSelecedCategory() {
 
   const selectedProgressItem = selectProgress(response, selectedOption);
 
-  console.log(selectedProgressItem);
   return selectedProgressItem;
 }
 
@@ -175,7 +198,8 @@ function displayTodo(inputValue) {
   const listItem = listItemcln.querySelector(".list-item");
   listItem.dataset.id = inputValue._id;
   const textArea = listItemcln.querySelector(".secondaryInput");
-  textArea.textContent = inputValue.title ? inputValue.title : inputValue.value;
+  textArea.value = inputValue.title;
+  textArea.dataset.parent = inputValue._id;
   addEvenListenerToExpand(textArea);
   const actionstodo = listItemcln.querySelector(".actionstodo");
   actionstodo.dataset.parent = inputValue._id;
@@ -193,18 +217,21 @@ function displayTodo(inputValue) {
     .addEventListener("click", () => deleteItem(inputValue._id));
 
   listItemcln.querySelector(".save").addEventListener("click", () => {
+    appendToTheEnd = false;
     listItem.querySelector(".actionstodo").dataset.active = "false";
-    updateTodo(inputValue);
+    const updatedTodo = {
+      title: textArea.value,
+    };
+    updateTodo(event, inputValue._id, updatedTodo);
   });
 
   listItemcln.querySelector(".more").addEventListener("click", () => {
+    console.log("clicked the button");
+    addedNewItem = false;
     event.preventDefault();
-
     assignDetailedValues(inputValue);
   });
-  console.log(inputValue);
 
-  console.log(inputValue.progresscard[0]._id);
   document
     .querySelector(`[data-id="${inputValue.progresscard[0]._id}"] .list`)
     .append(listItemcln);
@@ -212,13 +239,17 @@ function displayTodo(inputValue) {
 
 function assignDetailedValues(todo) {
   event.preventDefault();
-  const dueDate = new Date(todo.deadline);
-  const dueDateFormated = dueDate.toISOString().slice(0, 10);
+  const dueDate = todo.deadline
+    ? new Date(todo.deadline).toISOString().slice(0, 10)
+    : null;
 
-  const datecreated = new Date(todo.dateadded);
-  const dateCreatedFormated = datecreated.toISOString().slice(0, 10);
+  const datecreated = todo.dateadded
+    ? new Date(todo.dateadded).toISOString().slice(0, 10)
+    : null;
+
+  const today = new Date();
+  const todayFormated = today.toISOString().slice(0, 10);
   document.querySelector("#dueDate").setAttribute("min", todayFormated);
-
   document.querySelector(".more-info-container").dataset.active = "true";
   document.querySelector("#shortName").value = todo.title ? todo.title : null;
   document.querySelector(".description").value = todo.description
@@ -227,25 +258,16 @@ function assignDetailedValues(todo) {
   document.querySelector("#estimate").value = todo.estimate
     ? todo.estimate
     : null;
-  document.querySelector("#dueDate").value = dueDateFormated
-    ? dueDateFormated
-    : null;
+  document.querySelector("#dueDate").value = dueDate;
   document.querySelector("#author").value = todo.author ? todo.author : null;
-
-  document.querySelector("#dateAdded").value = dateCreatedFormated
-    ? dateCreatedFormated
-    : null;
+  document.querySelector("#dateAdded").value = datecreated;
   setDefaultSelected(todo.progresscard[0]);
 }
 
-function updateTodo(todo) {
+function updateTodo(event, id, newTodo) {
   event.preventDefault();
-  const todoItemIntheDom = document.querySelector(`[data-id="${todo._id}"]`);
-  const newBand = {
-    title: todoItemIntheDom.querySelector("textarea").value,
-  };
-  let postData = JSON.stringify(newBand);
-  fetch(`https://deleteme-6090.restdb.io/rest/card/${todo._id}`, {
+  let postData = JSON.stringify(newTodo);
+  fetch(`https://deleteme-6090.restdb.io/rest/card/${id}`, {
     method: "put",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -255,12 +277,25 @@ function updateTodo(todo) {
     body: postData,
   })
     .then((d) => d.json())
-    .then((item) => assingUpdatedValues(item, todoItemIntheDom));
+    .then((item) => assingUpdatedValues(item));
 }
 
-function assingUpdatedValues(todo, todoItemIntheDom) {
-  todoItemIntheDom.querySelector("textarea").value = todo.title;
+function assingUpdatedValues(todo) {
   console.log(todo);
+
+  const itemInTheDom = document.querySelector(`[data-id="${todo._id}"]`);
+  itemInTheDom.querySelector("textarea").value = todo.title;
+
+  if (!appendToTheEnd) {
+    appendToTheEnd = true;
+
+    return false;
+  } else {
+    itemInTheDom.remove();
+    document
+      .querySelector(`[data-id="${todo.progresscard[0]._id}"] .list`)
+      .append(itemInTheDom);
+  }
 }
 
 function deleteItem(itemId) {
@@ -273,9 +308,7 @@ function deleteItem(itemId) {
       "x-apikey": "5e9570bb436377171a0c2315",
       "cache-control": "no-cache",
     },
-  })
-    .then((res) => res.json())
-    .then((data) => console.log(data));
+  }).then((res) => res.json());
 }
 
 function addItem(inputValue, progress) {
